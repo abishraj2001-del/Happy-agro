@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Delivery Eligibility</title>
+</head>
+<body>
+<h3>Checking delivery eligibility…</h3>
+
+<script>
+const FARM_LAT = 8.335010;   // your farm latitude
+const FARM_LNG = 77.252265;   // your farm longitude
+const MAX_KM = 5;
+
+function distanceKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2-lat1) * Math.PI/180;
+  const dLon = (lon2-lon1) * Math.PI/180;
+  const a =
+    Math.sin(dLat/2) ** 2 +
+    Math.cos(lat1*Math.PI/180) *
+    Math.cos(lat2*Math.PI/180) *
+    Math.sin(dLon/2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+navigator.geolocation.getCurrentPosition(pos => {
+  const userLat = pos.coords.latitude;
+  const userLng = pos.coords.longitude;
+
+  const km = distanceKm(FARM_LAT, FARM_LNG, userLat, userLng);
+
+  if (km <= MAX_KM) {
+    alert("✅ Eligible for FREE delivery\nDistance: " + km.toFixed(2) + " km");
+  } else {
+    alert("❌ Not eligible for free delivery\nDistance: " + km.toFixed(2) + " km");
+  }
+
+  // Open Google Maps route
+  window.location.href =
+    `https://www.google.com/maps/dir/?api=1&origin=${FARM_LAT},${FARM_LNG}&destination=${userLat},${userLng}&travelmode=driving`;
+});
+</script>
+</body>
+</html>
